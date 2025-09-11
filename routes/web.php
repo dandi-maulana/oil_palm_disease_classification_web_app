@@ -3,10 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrediksiController;
 
-// Saat pengguna membuka halaman utama (misal: http://127.0.0.1:8000),
-// panggil fungsi 'index' di PrediksiController
-Route::get('/', [PrediksiController::class, 'index']);
+// Rute untuk halaman-halaman utama
+Route::get('/', [PrediksiController::class, 'home'])->name('home');
+Route::get('/hasil', [PrediksiController::class, 'hasil'])->name('hasil');
+Route::get('/pengujian', [PrediksiController::class, 'pengujian'])->name('pengujian');
+Route::get('/tentang-kami', [PrediksiController::class, 'tentangKami'])->name('tentang-kami');
 
-// Saat ada data (gambar) yang dikirim ke alamat '/predict',
-// panggil fungsi 'predict' di PrediksiController
+// Rute untuk menerima file gambar dari halaman pengujian
 Route::post('/predict', [PrediksiController::class, 'predict'])->name('predict');
