@@ -32,6 +32,7 @@
                     <a href="{{ route('home') }}" class="{{ request()->is('/') ? 'text-blue-600 font-bold border-b-2 border-blue-600' : 'text-gray-600' }} pb-1 transition duration-300 hover:text-blue-600">Home</a>
                     <a href="{{ route('hasil') }}" class="{{ request()->is('hasil') ? 'text-blue-600 font-bold border-b-2 border-blue-600' : 'text-gray-600' }} pb-1 transition duration-300 hover:text-blue-600">Hasil Model</a>
                     <a href="{{ route('pengujian') }}" class="{{ request()->is('pengujian') ? 'text-blue-600 font-bold border-b-2 border-blue-600' : 'text-gray-600' }} pb-1 transition duration-300 hover:text-blue-600">Pengujian</a>
+                    <a href="{{ route('riwayat') }}" class="{{ request()->is('riwayat') ? 'text-blue-600 font-bold border-b-2 border-blue-600' : 'text-gray-600' }} pb-1 transition duration-300 hover:text-blue-600">Riwayat</a>
                     <a href="{{ route('tentang-kami') }}" class="{{ request()->is('tentang-kami') ? 'text-blue-600 font-bold border-b-2 border-blue-600' : 'text-gray-600' }} pb-1 transition duration-300 hover:text-blue-600">Tentang Kami</a>
                 </div>
                 <div class="md:hidden">
@@ -44,6 +45,7 @@
                 <a href="{{ route('home') }}" class="block px-4 py-2 text-sm rounded-md {{ request()->is('/') ? 'bg-blue-100 text-blue-700' : 'text-gray-700' }} hover:bg-blue-50">Home</a>
                 <a href="{{ route('hasil') }}" class="block px-4 py-2 text-sm rounded-md {{ request()->is('hasil') ? 'bg-blue-100 text-blue-700' : 'text-gray-700' }} hover:bg-blue-50">Hasil Model</a>
                 <a href="{{ route('pengujian') }}" class="block px-4 py-2 text-sm rounded-md {{ request()->is('pengujian') ? 'bg-blue-100 text-blue-700' : 'text-gray-700' }} hover:bg-blue-50">Pengujian</a>
+                <a href="{{ route('riwayat') }}" class="block px-4 py-2 text-sm rounded-md {{ request()->is('riwayat') ? 'bg-blue-100 text-blue-700' : 'text-gray-700' }} hover:bg-blue-50">Riwayat</a>
                 <a href="{{ route('tentang-kami') }}" class="block px-4 py-2 text-sm rounded-md {{ request()->is('tentang-kami') ? 'bg-blue-100 text-blue-700' : 'text-gray-700' }} hover:bg-blue-50">Tentang Kami</a>
             </div>
         </nav>
