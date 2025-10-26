@@ -12,3 +12,4 @@ Route::get('/riwayat', [PrediksiController::class, 'riwayat'])->name('riwayat');
 
 // Rute untuk menerima file gambar dari halaman pengujian
 Route::post('/predict', [PrediksiController::class, 'predict'])->name('predict');
+

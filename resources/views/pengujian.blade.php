@@ -1,5 +1,5 @@
 <x-layout>
-    {{-- Halaman Pengujian dengan Modal --}}
+    {{-- Halaman Pengujian dengan Modal dan Hasil Langsung --}}
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto" data-aos="fade-in">
         
         <div class="text-center mb-6">
@@ -7,7 +7,6 @@
             <p class="text-slate-600">Silakan unggah foto daun kelapa sawit untuk memulai analisis.</p>
         </div>
 
-        {{-- Form hanya berisi tombol untuk memicu pemilihan file --}}
         <div class="text-center">
             <label for="gambar-input" class="cursor-pointer inline-block bg-blue-600 text-white font-bold text-lg px-8 py-4 rounded-lg shadow-lg hover:bg-blue-700 transition-transform duration-300 transform hover:scale-105">
                 Pilih Gambar Daun
@@ -49,26 +48,22 @@
     </div>
 
     <div id="preview-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-full overflow-y-auto p-6"  x-data="{ open: true }" x-show="open" @click.away="open = false; document.getElementById('preview-modal').classList.add('hidden')">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-full overflow-y-auto p-6">
             <h3 class="text-2xl font-bold text-blue-900 mb-4">Konfirmasi Pengujian</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <h4 class="font-semibold text-slate-700 mb-2">Preview Gambar:</h4>
                     <img id="preview-image" src="#" alt="Preview Gambar" class="rounded-lg shadow-md w-full">
                 </div>
-                <div class="space-y-3 text-slate-800">
+                <div class="space-y-4 text-slate-800">
                     <h4 class="font-semibold text-slate-700 mb-2">Detail Pengujian:</h4>
                     <div>
-                        <p class="font-bold">Tim Pengembang:</p>
-                        <p class="text-sm">Nugraha R.D, Stevi F.S, M.Rizky A.H</p>
-                    </div>
-                     <div>
-                        <p class="font-bold">Dosen Pembimbing:</p>
-                        <p class="text-sm">Muhathir, S.T., M.Kom</p>
+                        <label for="nama-penguji" class="block text-sm font-bold">Nama Penguji:</label>
+                        <input type="text" id="nama-penguji" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                        <p class="font-bold">Lokasi Dataset:</p>
-                        <p class="text-sm">Desa Sei-Simujur, Kec. Laut Tador, Kab. Batu Bara, Sumatera Utara.</p>
+                        <label for="lokasi-pengujian" class="block text-sm font-bold">Alamat/Lokasi Pengujian:</label>
+                        <input type="text" id="lokasi-pengujian" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
                         <p class="font-bold">Model AI:</p>
@@ -101,26 +96,23 @@
             const confirmButton = document.getElementById('confirm-button');
             const modalLoader = document.getElementById('modal-loader');
             const buttonText = document.getElementById('button-text');
+            const namaPengujiInput = document.getElementById('nama-penguji');
+            const lokasiPengujianInput = document.getElementById('lokasi-pengujian');
 
             const resultArea = document.getElementById('result-area');
-            const resultContent = document.getElementById('result-content');
             const errorArea = document.getElementById('error-area');
             const errorMessage = document.getElementById('error-message');
             
             let selectedFile = null;
             let beforeTime = null;
 
-            // Event listener untuk input file
             fileInput.addEventListener('change', (e) => {
                 if (e.target.files && e.target.files[0]) {
                     selectedFile = e.target.files[0];
                     const reader = new FileReader();
-                    reader.onload = (event) => {
-                        previewImage.src = event.target.result;
-                    }
+                    reader.onload = (event) => { previewImage.src = event.target.result; }
                     reader.readAsDataURL(selectedFile);
                     
-                    // Format waktu Indonesia
                     beforeTime = new Date();
                     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Jakarta' };
                     modalTime.textContent = beforeTime.toLocaleDateString('id-ID', options);
@@ -129,12 +121,13 @@
                 }
             });
 
-            // Fungsi untuk menutup modal
             function closeModal() {
                 modal.classList.add('hidden');
-                fileInput.value = ''; // Reset input file
+                fileInput.value = '';
                 selectedFile = null;
                 beforeTime = null;
+                namaPengujiInput.value = '';
+                lokasiPengujianInput.value = '';
                 confirmButton.disabled = false;
                 modalLoader.classList.add('hidden');
                 buttonText.textContent = 'Analisis Sekarang';
@@ -142,21 +135,31 @@
 
             cancelButton.addEventListener('click', closeModal);
 
-            // Event listener untuk tombol konfirmasi analisis
+            // === EVENT LISTENER DIPERBARUI DI SINI ===
             confirmButton.addEventListener('click', async () => {
                 if (!selectedFile || !beforeTime) return;
+                
+                const namaPenguji = namaPengujiInput.value.trim();
+                const lokasiPengujian = lokasiPengujianInput.value.trim();
 
-                // Tampilkan loading di tombol
+                if (namaPenguji === '' || lokasiPengujian === '') {
+                    alert('Nama Penguji dan Lokasi Pengujian tidak boleh kosong.');
+                    return;
+                }
+
                 confirmButton.disabled = true;
                 modalLoader.classList.remove('hidden');
                 buttonText.textContent = 'Menganalisis...';
 
+                // Sembunyikan hasil/error sebelumnya
                 resultArea.classList.add('hidden');
                 errorArea.classList.add('hidden');
 
                 const formData = new FormData();
                 formData.append('gambar_sawit', selectedFile);
                 formData.append('waktu_sebelum_uji', beforeTime.toISOString());
+                formData.append('nama_penguji', namaPenguji);
+                formData.append('lokasi_pengujian', lokasiPengujian);
 
                 try {
                     const response = await fetch("{{ route('predict') }}", {
@@ -171,15 +174,21 @@
                     const data = await response.json();
                     
                     if (!response.ok) {
+                        if (response.status === 422 && data.errors) {
+                            const errorMessages = Object.values(data.errors).flat().join('\n');
+                            throw new Error(errorMessages);
+                        }
                         throw new Error(data.error || 'Terjadi kesalahan tidak diketahui.');
                     }
                     
+                    // Panggil fungsi untuk menampilkan hasil di halaman
                     displayResults(data);
+                    closeModal();
 
                 } catch (error) {
+                    // Panggil fungsi untuk menampilkan error di halaman
                     displayError(error.message);
-                } finally {
-                    closeModal();
+                    closeModal(); // Tetap tutup modal meskipun error
                 }
             });
 
@@ -195,7 +204,7 @@
                 const outputDiv = document.getElementById('prediction-output');
                 const prediksiText = document.getElementById('hasil-prediksi');
     
-                outputDiv.className = 'p-4 rounded-lg'; // Reset classes
+                outputDiv.className = 'p-4 rounded-lg';
                 prediksiText.className = 'text-2xl font-bold';
     
                 if (data.prediksi === 'Daun Sehat') {

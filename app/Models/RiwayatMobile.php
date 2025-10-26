@@ -5,26 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RiwayatPrediksi extends Model
+class RiwayatMobile extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'gambar_path',
         'nama_file',
         'hasil_prediksi',
         'kepercayaan',
-        'lokasi_dataset',
-        'model_ai',
         'nama_penguji', // <-- TAMBAHKAN INI
-        'lokasi_pengujian',
-        'waktu_sebelum_uji',
-        'waktu_sesudah_uji',
-        'durasi_pengujian',
+        'lokasi_pengujian', // <-- TAMBAHKAN INI
+        'durasi_pengujian'
     ];
 }

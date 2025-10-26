@@ -23,6 +23,7 @@
 
                 <div class="space-y-4">
                     @forelse ($riwayat as $item)
+                        {{-- DATA BARU DITAMBAHKAN DI SINI --}}
                         <div class="riwayat-card bg-slate-50 border rounded-lg p-4 flex items-center space-x-4 cursor-pointer hover:bg-blue-100 transition duration-300"
                              data-gambar="{{ Storage::url($item->gambar_path) }}"
                              data-hasil="{{ $item->hasil_prediksi }}"
@@ -31,7 +32,9 @@
                              data-lokasi="{{ $item->lokasi_dataset }}"
                              data-waktu="{{ \Carbon\Carbon::parse($item->waktu_sesudah_uji)->translatedFormat('d F Y, H:i:s') }}"
                              data-durasi="{{ number_format($item->durasi_pengujian, 4) }} detik"
-                             data-file="{{ $item->nama_file }}">
+                             data-file="{{ $item->nama_file }}"
+                             data-penguji="{{ $item->nama_penguji }}"
+                             data-lokasi-pengujian="{{ $item->lokasi_pengujian }}">
                             
                             <img src="{{ Storage::url($item->gambar_path) }}" alt="Preview {{ $item->nama_file }}" class="w-20 h-20 object-cover rounded-md shadow-sm">
                             
@@ -40,6 +43,8 @@
                                     {{ $item->hasil_prediksi }}
                                 </p>
                                 <p class="text-sm text-gray-600">Kepercayaan: {{ $item->kepercayaan }}</p>
+                                {{-- INFO PENGUJI DITAMBAHKAN DI KARTU --}}
+                                <p class="text-xs text-gray-500 mt-1">Diuji oleh: <strong>{{ $item->nama_penguji }}</strong></p>
                                 <p class="text-xs text-gray-500 mt-1">
                                     {{ \Carbon\Carbon::parse($item->waktu_sesudah_uji)->diffForHumans() }}
                                 </p>
@@ -75,6 +80,7 @@
                 <div>
                     <img id="modal-gambar" src="" alt="Gambar Detail" class="rounded-lg shadow-md w-full">
                 </div>
+                {{-- DETAIL MODAL DIPERBARUI DI SINI --}}
                 <div class="space-y-3 text-slate-800">
                      <div>
                         <p class="font-bold">Hasil Prediksi:</p>
@@ -83,6 +89,15 @@
                     <div>
                         <p class="font-bold">Tingkat Kepercayaan:</p>
                         <p id="modal-kepercayaan"></p>
+                    </div>
+                    <div class="border-t my-2"></div>
+                    <div>
+                        <p class="font-bold">Nama Penguji:</p>
+                        <p class="text-sm" id="modal-penguji"></p>
+                    </div>
+                    <div>
+                        <p class="font-bold">Lokasi Pengujian:</p>
+                        <p class="text-sm" id="modal-lokasi-pengujian"></p>
                     </div>
                     <div class="border-t my-2"></div>
                     <div>
@@ -96,15 +111,6 @@
                      <div>
                         <p class="font-bold">Nama File Asli:</p>
                         <p class="text-sm" id="modal-file"></p>
-                    </div>
-                    <div class="border-t my-2"></div>
-                     <div>
-                        <p class="font-bold">Model AI:</p>
-                        <p class="text-sm" id="modal-model"></p>
-                    </div>
-                     <div>
-                        <p class="font-bold">Lokasi Dataset:</p>
-                        <p class="text-sm" id="modal-lokasi"></p>
                     </div>
                 </div>
             </div>
@@ -125,8 +131,10 @@
                 document.getElementById('modal-waktu').textContent = data.waktu;
                 document.getElementById('modal-durasi').textContent = data.durasi;
                 document.getElementById('modal-file').textContent = data.file;
-                document.getElementById('modal-model').textContent = data.model;
-                document.getElementById('modal-lokasi').textContent = data.lokasi;
+                
+                // === JAVASCRIPT DIPERBARUI DI SINI ===
+                document.getElementById('modal-penguji').textContent = data.penguji;
+                document.getElementById('modal-lokasi-pengujian').textContent = data.lokasi_pengujian;
                 
                 const hasilText = document.getElementById('modal-hasil');
                 hasilText.classList.remove('text-green-600', 'text-red-600');
@@ -154,6 +162,9 @@
                         waktu: card.dataset.waktu,
                         durasi: card.dataset.durasi,
                         file: card.dataset.file,
+                        // === DATA BARU DIAMBIL DARI KARTU ===
+                        penguji: card.dataset.penguji,
+                        lokasi_pengujian: card.dataset.lokasiPengujian, // perhatikan camelCase
                     };
                     showModal(data);
                 });

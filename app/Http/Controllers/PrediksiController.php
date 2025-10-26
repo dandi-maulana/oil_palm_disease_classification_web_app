@@ -52,19 +52,18 @@ class PrediksiController extends Controller
     // Fungsi predict diperbarui total
     public function predict(Request $request)
     {
+        // Perbarui aturan validasi
         $request->validate([
             'gambar_sawit' => 'required|image|mimes:jpeg,png,jpg|max:10240',
             'waktu_sebelum_uji' => 'required|date',
+            'nama_penguji' => 'required|string|max:255', // Validasi input baru
+            'lokasi_pengujian' => 'required|string|max:255', // Validasi input baru
         ]);
 
         $startTime = microtime(true);
-
-        // === LOGIKA PENYIMPANAN GAMBAR DIMULAI DI SINI ===
         $file = $request->file('gambar_sawit');
         $fileName = time() . '_' . $file->getClientOriginalName();
-        // Simpan file ke storage/app/public/uploads
         $path = $file->storeAs('uploads', $fileName, 'public');
-        // === LOGIKA PENYIMPANAN GAMBAR SELESAI ===
 
         try {
             $response = Http::attach(
@@ -79,14 +78,18 @@ class PrediksiController extends Controller
             if ($response->successful()) {
                 $data = $response->json();
 
-                // Simpan ke database dengan path gambar
+                // Simpan ke database dengan data inputan baru
                 RiwayatPrediksi::create([
-                    'gambar_path' => $path, // <-- SIMPAN PATH GAMBAR
+                    'gambar_path' => $path,
                     'nama_file' => $file->getClientOriginalName(),
                     'hasil_prediksi' => $data['prediksi'],
                     'kepercayaan' => $data['kepercayaan'],
+                    // Data statis yang lama masih bisa disimpan
                     'lokasi_dataset' => 'Desa Sei-Simujur, Kecamatan Laut Tador, Kabupaten Batu Bara, Sumatera Utara.',
                     'model_ai' => 'Arsitektur Squeezenet dengan Grup Convolution',
+                    // Data dinamis dari input pengguna
+                    'nama_penguji' => $request->nama_penguji,
+                    'lokasi_pengujian' => $request->lokasi_pengujian,
                     'waktu_sebelum_uji' => \Carbon\Carbon::parse($request->waktu_sebelum_uji),
                     'waktu_sesudah_uji' => now(),
                     'durasi_pengujian' => $duration,
@@ -97,11 +100,11 @@ class PrediksiController extends Controller
 
                 return response()->json($data);
             } else {
-                Storage::disk('public')->delete($path); // Hapus gambar jika API gagal
+                Storage::disk('public')->delete($path);
                 return response()->json(['error' => 'Gagal mendapatkan prediksi dari server AI.'], 500);
             }
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            Storage::disk('public')->delete($path); // Hapus gambar jika API gagal
+        } catch (\Exception $e) {
+            Storage::disk('public')->delete($path);
             return response()->json(['error' => 'Tidak dapat terhubung ke server AI. Pastikan server Python sedang berjalan.'], 500);
         }
     }
